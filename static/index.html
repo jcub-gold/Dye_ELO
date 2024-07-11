@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrueSkill Ranking</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>TrueSkill Ranking System</h1>
+
+        <div class="section">
+            <h2>Get Player Rating</h2>
+            <div class="input-group">
+                <input type="text" id="playerIdInput" placeholder="Enter Player ID">
+                <button onclick="getRating()">Get Rating</button>
+            </div>
+            <p id="playerRating"></p>
+        </div>
+
+        <div class="section">
+            <h2>Update Match Result</h2>
+            <div class="team-input">
+                <div class="team">
+                    <h3>Winning Team</h3>
+                    <input type="text" id="winningTeamInput" placeholder="Player IDs (comma separated)">
+                </div>
+                <div class="team">
+                    <h3>Losing Team</h3>
+                    <input type="text" id="losingTeamInput" placeholder="Player IDs (comma separated)">
+                </div>
+            </div>
+            <button onclick="updateMatch()">Update Match</button>
+            <p id="updateStatus"></p>
+        </div>
+    </div>
+
+    <script>
+        function getRating() {
+            const playerId = document.getElementById('playerIdInput').value;
+            fetch(`/rating/${playerId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('playerRating').textContent = `Player ID: ${data.player_id}, Mu: ${data.mu.toFixed(2)}, Sigma: ${data.sigma.toFixed(2)}`;
+                })
+                .catch(error => {
+                    document.getElementById('playerRating').textContent = 'Player not found';
+                });
+        }
+
+        function updateMatch() {
+            const winningTeamIds = document.getElementById('winningTeamInput').value.split(',').map(id => id.trim());
+            const losingTeamIds = document.getElementById('losingTeamInput').value.split(',').map(id => id.trim());
+
+            fetch('/match', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ winning_team: winningTeamIds, losing_team: losingTeamIds })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('updateStatus').textContent = data.status;
+                })
+                .catch(error => {
+                    document.getElementById('updateStatus').textContent = 'Failed to update match';
+                });
+        }
+    </script>
+</body>
+</html>
