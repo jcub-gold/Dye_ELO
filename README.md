@@ -25,7 +25,7 @@ src/
 ```
 
 # Run the experiment
-To access on web browser search according to the following example: http://127.0.0.1:5000/static/index.html
+To access on web browser search according to the following example: http://123.4.5.6:7890/static/index.html
 ```bash
 python app.py
 ```
