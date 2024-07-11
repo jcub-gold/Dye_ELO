@@ -3,6 +3,8 @@ import trueskill as ts
 import pickle
 import os
 
+RATING_SCALING_FACTOR = 40
+
 app = Flask(__name__)
 env = ts.TrueSkill()
 
@@ -25,7 +27,9 @@ def get_rating(player_id):
     if player_id not in player_ratings:
         return jsonify({'error': 'Player not found'}), 404
     rating = player_ratings[player_id]
-    return jsonify({'player_id': player_id, 'mu': rating.mu, 'sigma': rating.sigma})
+    mu_int = int(rating.mu * RATING_SCALING_FACTOR)
+    sigma_int = int(rating.sigma * RATING_SCALING_FACTOR)
+    return jsonify({'player_id': player_id, 'mu': mu_int, 'sigma': sigma_int})
 
 # Endpoint to update ratings after a match
 @app.route('/match', methods=['POST'])
